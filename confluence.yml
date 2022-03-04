@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+  confluence-server:
+    image: atlassian/confluence-server
+    container_name: confluence
+    restart: unless-stopped
+    volumes:
+      - wiki-data:/var/atlassian/application-data/confluence
+    networks: 
+      - wikinet
+    ports:
+      - "0.0.0.0:8090:8090"
+      - "0.0.0.0:8091:8091"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:12
+    container_name: postgres
+    restart: unless-stopped
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks: 
+      - wikinet
+    environment:
+      POSTGRES_DB: wiki
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_ENCODING: UNICODE
+      POSTGRES_COLLATE: C
+      POSTGRES_COLLATE_TYPE: C
+volumes:
+  wiki-data:
+    name: wiki-data
+  db-data:
+    name: db-data
+networks:
+  wikinet:
+    name: wiki
